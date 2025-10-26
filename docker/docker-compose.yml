@@ -1,0 +1,32 @@
+networks:
+  tourai-network:
+    name: tourai-network
+    external: false
+
+services:
+  postgres:
+    image: postgres:${POSTGRESQL_VERSION}
+    container_name: ${POSTGRESQL_HOST}
+    hostname: ${POSTGRESQL_HOST}
+    ports:
+      - ${POSTGRESQL_PORT_EXTERNAL}:${POSTGRESQL_PORT}
+    volumes:
+      - ${POSTGRESQL_PATH}:/var/lib/postgresql/data
+    networks:
+      - tourai-network
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      TZ: "America/Fortaleza"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      interval: 10s
+      timeout: 30s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+        max-file: "3"
