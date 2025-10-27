@@ -30,3 +30,31 @@ services:
       options:
         max-size: "1g"
         max-file: "3"
+
+  minio:
+    image: minio/minio:latest
+    container_name: ${MINIO_HOST}
+    hostname: ${MINIO_HOST}
+    ports:
+      - ${MINIO_PORT_EXTERNAL}:9000
+      - ${MINIO_CONSOLE_PORT_EXTERNAL}:9001
+    volumes:
+      - ${MINIO_PATH}:/data
+    networks:
+      - tourai-network
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+      TZ: "America/Fortaleza"
+    command: server /data --console-address ":9001"
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:9000/minio/health/live" ]
+      interval: 10s
+      timeout: 30s
+      retries: 10
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+        max-file: "3"
