@@ -45,17 +45,16 @@ public class PublicacaoController {
     }
 
     @GetMapping("/recentes")
-    public ResponseEntity<List<Publicacao>> listarMaisRecentes(
-            @RequestParam(defaultValue = "10") int quantidade) {
+    public ResponseEntity<List<Publicacao>> listarMaisRecentes(@RequestParam(defaultValue = "10") int quantidade) {
         List<Publicacao> publicacoes = publicacaoService.getMaisRecentes(quantidade);
         return ResponseEntity.ok(publicacoes);
     }
 
     @GetMapping("/antigos")
     public ResponseEntity<List<Publicacao>> listarMaisAntigas(
-            @RequestParam Instant antesDe,
+            @RequestParam Instant ultimo,
             @RequestParam(defaultValue = "10") int quantidade) {
-        List<Publicacao> publicacoes = publicacaoService.getMaisAntigas(antesDe, quantidade);
+        List<Publicacao> publicacoes = publicacaoService.getMaisAntigas(ultimo, quantidade);
         return ResponseEntity.ok(publicacoes);
     }
 }
