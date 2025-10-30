@@ -3,6 +3,7 @@ package br.imd.ufrn.tourai.service;
 import br.imd.ufrn.tourai.model.Atividade;
 import br.imd.ufrn.tourai.model.StatusModeracao;
 import br.imd.ufrn.tourai.model.TipoAtividade;
+import br.imd.ufrn.tourai.model.User;
 import br.imd.ufrn.tourai.repository.AtividadeRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,7 +105,7 @@ public class AtividadeService {
 
     @Transactional(readOnly = true)
     public List<Atividade> listarAtividadesPendentesModeracao() {
-        return atividadeRepository.findByTipoAndStatusModerao(TipoAtividade.PERSONALIZADA_PUBLICA, StatusModeracao.PENDENTE);
+        return atividadeRepository.findByTipoAndStatusModeracao(TipoAtividade.PERSONALIZADA_PUBLICA, StatusModeracao.PENDENTE);
     }
 
     @Transactional

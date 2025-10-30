@@ -49,5 +49,5 @@ public interface AtividadeRepository extends JpaRepository<Atividade, Long> {
     List<Atividade> findByCriadorId(Long criadorId);
 
     //T26-Fila-Moderação – cards com conteúdo pendente (atividade/roteiro), ações (aprovar/reprovar/editar tags), histórico.
-    List<Atividade> findByTipoAndStatusModerao(TipoAtividade tipo, StatusModeracao status);
+    List<Atividade> findByTipoAndStatusModeracao(TipoAtividade tipo, StatusModeracao status);
 }

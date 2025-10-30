@@ -11,7 +11,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"user", "atividades"})
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Roteiro {
 
@@ -29,7 +29,7 @@ public class Roteiro {
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "roteiro_tags", joinColumns = @JoinColumn(name = "roteiro_id"))
     @Column(name = "tag")
-    private Set<String> tags = new HashSet<String>();
+    private Set<String> tags = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -50,7 +50,6 @@ public class Roteiro {
             joinColumns = @JoinColumn(name = "roteiro_id"),
             inverseJoinColumns = @JoinColumn(name = "atividade_id")
     )
-
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Set<Atividade> atividades = new HashSet<>();

@@ -13,11 +13,11 @@ import java.util.List;
 public interface RoteiroRepository extends JpaRepository<Roteiro, Long> {
 
     //T8-Meus-Roteiros – listagem (rascunho, privado, compartilhado, público).
-    List<Roteiro> findByUsuarioIdOrderByTituloAsc(Long userId);
+    List<Roteiro> findByUserIdOrderByTituloAsc(Long userId);
 
     //T5-Explorar – busca e filtros (destino, tema, duração, avaliação); cards de roteiros/atividades públicos
     //T26-Fila-Moderação – cards com conteúdo pendente (atividade/roteiro), ações (aprovar/reprovar/editar tags), histórico.
-    List<Roteiro> findByVisibilidadeAndStatusModeracao(VisibilidadeRoteiro visibilidade, StatusModeracao status);
+    List<Roteiro> findByVisibilidadeAndStatus(VisibilidadeRoteiro visibilidade, StatusModeracao status);
 
     //Busca otimizada de um Roteiro com suas atividades
     @Query("SELECT r FROM Roteiro r LEFT JOIN FETCH r.atividades WHERE r.id = :id")

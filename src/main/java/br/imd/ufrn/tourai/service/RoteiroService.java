@@ -3,7 +3,6 @@ package br.imd.ufrn.tourai.service;
 import br.imd.ufrn.tourai.model.*;
 import br.imd.ufrn.tourai.repository.RoteiroRepository;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -17,11 +16,13 @@ import java.util.stream.Collectors;
 @Service
 public class RoteiroService {
 
-    @Autowired
-    private RoteiroRepository roteiroRepository;
+    private final RoteiroRepository roteiroRepository;
+    private final AtividadeService atividadeService;
 
-    @Autowired
-    private AtividadeService atividadeService;
+    public RoteiroService(RoteiroRepository roteiroRepository, AtividadeService atividadeService) {
+        this.roteiroRepository = roteiroRepository;
+        this.atividadeService = atividadeService;
+    }
 
     //T8-Meus-Roteiros – listagem (rascunho, privado, compartilhado, público).
     @Transactional(readOnly = true)
@@ -29,7 +30,7 @@ public class RoteiroService {
         if (usuarioLogado == null || usuarioLogado.getId() == null) {
             throw new IllegalArgumentException("Usuário inválido ou não logado.");
         }
-        return roteiroRepository.findByUsuarioIdOrderByTituloAsc(usuarioLogado.getId());
+        return roteiroRepository.findByUserIdOrderByTituloAsc(usuarioLogado.getId());
     }
 
     //T9-Editor-Roteiro – formulário + adicionar atividades (catálogo/personalizadas), ordenar lista, definir visibilidade.
@@ -178,7 +179,7 @@ public class RoteiroService {
 
     @Transactional(readOnly = true)
     public List<Roteiro> listarRoteirosPendentesModeracao() {
-        return roteiroRepository.findByVisibilidadeAndStatusModeracao(VisibilidadeRoteiro.PUBLICO, StatusModeracao.PENDENTE);
+        return roteiroRepository.findByVisibilidadeAndStatus(VisibilidadeRoteiro.PUBLICO, StatusModeracao.PENDENTE);
     }
 
     @Transactional
