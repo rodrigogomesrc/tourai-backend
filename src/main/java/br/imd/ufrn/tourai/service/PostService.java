@@ -2,9 +2,7 @@ package br.imd.ufrn.tourai.service;
 
 import br.imd.ufrn.tourai.exception.ConflictException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
-import br.imd.ufrn.tourai.exception.UnauthorizedException;
-import br.imd.ufrn.tourai.model.Comment;
-import br.imd.ufrn.tourai.model.CommentLike;
+import br.imd.ufrn.tourai.model.PostLike;
 import br.imd.ufrn.tourai.model.Post;
 import br.imd.ufrn.tourai.model.User;
 import br.imd.ufrn.tourai.repository.CommentRepository;
@@ -78,20 +76,20 @@ public class PostService {
             throw new ConflictException("User already liked this post");
         }
 
-        CommentLike commentLike = new CommentLike();
-        commentLike.setPost(post);
-        commentLike.setLiker(liker.get());
-        commentLike.setDate(Instant.now());
-        likeRepository.save(commentLike);
+        PostLike postLike = new PostLike();
+        postLike.setPost(post);
+        postLike.setLiker(liker.get());
+        postLike.setDate(Instant.now());
+        likeRepository.save(postLike);
     }
 
     @Transactional
     public void removeLike(Integer postId, Long likerId) {
-        CommentLike commentLike = likeRepository
+        PostLike postLike = likeRepository
                 .findByPostIdAndLikerId(postId, Math.toIntExact(likerId))
                 .orElseThrow(() -> new ResourceNotFoundException("Like not found"));
 
-        likeRepository.delete(commentLike);
+        likeRepository.delete(postLike);
     }
 
 
