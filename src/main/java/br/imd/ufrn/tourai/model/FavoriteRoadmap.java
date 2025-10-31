@@ -4,31 +4,25 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.Instant;
-
 @Entity
-public class CommentLike {
+public class FavoriteRoadmap {
 
     @Setter
     @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Setter
-    @Getter
-    @ManyToOne
-    @JoinColumn(name = "post_id", nullable = false)
-    private Post post;
+    private Integer id;
 
     @Setter
     @Getter
     @ManyToOne
     @JoinColumn(name = "user_id")
-    private User liker;
+    private User user;
 
     @Setter
     @Getter
-    private Instant date;
+    @ManyToOne
+    @JoinColumn(name = "roteiro_id")
+    private Roteiro roadmap;
 
 }

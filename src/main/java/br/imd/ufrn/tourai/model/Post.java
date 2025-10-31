@@ -21,7 +21,7 @@ public class Post {
     @Setter
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
-    private List<CommentLike> commentLikes = new ArrayList<>();
+    private List<PostLike> postLikes = new ArrayList<>();
 
     @Setter
     @Getter
@@ -38,7 +38,7 @@ public class Post {
     private Instant postDate;
 
     public int getTotalLikes() {
-        return commentLikes != null ? commentLikes.size() : 0;
+        return postLikes != null ? postLikes.size() : 0;
     }
 
 }
