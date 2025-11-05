@@ -22,6 +22,10 @@ public class Itinerary {
     private Long id;
 
     @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @ManyToOne
     @JoinColumn(name = "roadmap_id", nullable = false)
     private Roteiro roadmap;
 
