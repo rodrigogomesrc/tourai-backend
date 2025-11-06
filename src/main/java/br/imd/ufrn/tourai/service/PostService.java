@@ -34,7 +34,11 @@ public class PostService {
         this.userService = userService;
     }
 
-    public Post save(Post post) {
+    public Post save(Post post, Integer userId) {
+
+        User user = userService.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+        post.setUser(user);
         Instant now = Instant.now();
         post.setPostDate(now);
         return postRepository.save(post);
@@ -90,6 +94,10 @@ public class PostService {
                 .orElseThrow(() -> new ResourceNotFoundException("Like not found"));
 
         likeRepository.delete(postLike);
+    }
+
+    public boolean hasUserLiked(Integer postId, Long userId) {
+        return likeRepository.findByPostIdAndLikerId(postId, Math.toIntExact(userId)).isPresent();
     }
 
 
