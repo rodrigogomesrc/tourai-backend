@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -66,10 +65,14 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest requestLogin) {
-        boolean is_authenticated = userService.authenticate(requestLogin.getEmail(), requestLogin.getPassword());
-        if (is_authenticated) return ResponseEntity.ok("authenticated");
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("invalid_credentials");
+    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest requestLogin) {
+        boolean isAuthenticated = userService.authenticate(requestLogin.getEmail(), requestLogin.getPassword());
+        if (!isAuthenticated) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        }
+        return userService.findByEmail(requestLogin.getEmail())
+               .map(user -> ResponseEntity.ok(toResponse(user)))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
     }
 
     private UserResponse toResponse(User user) {
