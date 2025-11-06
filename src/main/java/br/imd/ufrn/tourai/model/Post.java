@@ -1,13 +1,11 @@
 package br.imd.ufrn.tourai.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Formula;
 
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 public class Post {
@@ -22,14 +20,17 @@ public class Post {
     @Setter
     private String content;
 
-    @Setter
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
-    private List<PostLike> postLikes = new ArrayList<>();
+    @Formula("(SELECT COUNT(pl.id) FROM post_like pl WHERE pl.post_id = id)")
+    @Getter
+    private Integer totalLikes;
+
+    @Formula("(SELECT COUNT(c.id) FROM comment c WHERE c.post_id = id)")
+    @Getter
+    private Integer totalComments;
 
     @Setter
     @Getter
-    @OneToOne(orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", referencedColumnName = "id")
     private User user;
 
@@ -40,9 +41,5 @@ public class Post {
     @Setter
     @Getter
     private Instant postDate;
-
-    public int getTotalLikes() {
-        return postLikes != null ? postLikes.size() : 0;
-    }
 
 }

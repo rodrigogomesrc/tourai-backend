@@ -2,10 +2,7 @@ package br.imd.ufrn.tourai.controller;
 
 import br.imd.ufrn.tourai.exception.ConflictException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
-import br.imd.ufrn.tourai.exception.UnauthorizedException;
-import br.imd.ufrn.tourai.model.Comment;
 import br.imd.ufrn.tourai.model.Post;
-import br.imd.ufrn.tourai.service.CommentService;
 import br.imd.ufrn.tourai.service.PostService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,17 +16,15 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
-    private final CommentService commentService;
 
-    public PostController(PostService postService, CommentService commentService) {
-        this.commentService = commentService;
+    public PostController(PostService postService) {
         this.postService = postService;
     }
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post) {
-        Post salva = postService.save(post);
-        return ResponseEntity.status(HttpStatus.CREATED).body(salva);
+    public ResponseEntity<Post> createPost(@RequestBody Post post, @RequestParam Integer userId) {
+        Post salvo = postService.save(post, userId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(salvo);
     }
 
     @GetMapping("/{id}")
@@ -94,6 +89,14 @@ public class PostController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @GetMapping("/{postId}/liked")
+    public ResponseEntity<Boolean> hasUserLiked(
+            @PathVariable Integer postId,
+            @RequestParam Integer userId) {
+        boolean liked = postService.hasUserLiked(postId, Long.valueOf(userId));
+        return ResponseEntity.ok(liked);
     }
 
 }
