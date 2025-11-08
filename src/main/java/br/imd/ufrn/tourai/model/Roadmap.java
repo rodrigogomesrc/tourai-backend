@@ -12,7 +12,7 @@ import java.util.Set;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString // removed exclude parameter; use field-level @ToString.Exclude
+@ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Roadmap {
 

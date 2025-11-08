@@ -36,3 +36,5 @@ build/
 .env
 /postgres
 /docker/postgres
+/minio
+/minio_data
