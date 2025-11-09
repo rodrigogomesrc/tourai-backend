@@ -9,13 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.imd.ufrn.tourai.dto.CreateItineraryRequest;
+import br.imd.ufrn.tourai.dto.UpdateItineraryRequest;
 import br.imd.ufrn.tourai.model.Itinerary;
 import br.imd.ufrn.tourai.service.ItineraryService;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @RestController
 @RequestMapping("/itineraries")
@@ -27,17 +29,15 @@ public class ItineraryController {
     }
 
     @PostMapping
-    public ResponseEntity<Itinerary> create(@RequestBody Itinerary itinerary) {
-        Itinerary createdItinerary = itineraryService.save(itinerary);
+    public ResponseEntity<Itinerary> create(@RequestBody CreateItineraryRequest itinerary) {
+        Itinerary createdItinerary = itineraryService.create(itinerary);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(createdItinerary);
     }
 
     @PutMapping("/{id}")
-    public Itinerary update(@PathVariable Long id, @RequestBody Itinerary itinerary) {
-        itinerary.setId(id);
-
-        return itineraryService.save(itinerary);
+    public Itinerary update(@PathVariable Long id, @RequestBody UpdateItineraryRequest itinerary) {
+        return itineraryService.update(id, itinerary);
     }
 
     @GetMapping

@@ -2,10 +2,10 @@ package br.imd.ufrn.tourai.service;
 
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
 import br.imd.ufrn.tourai.model.FavoriteRoadmap;
-import br.imd.ufrn.tourai.model.Roteiro;
+import br.imd.ufrn.tourai.model.Roadmap;
 import br.imd.ufrn.tourai.model.User;
 import br.imd.ufrn.tourai.repository.FavoriteRoadmapRepository;
-import br.imd.ufrn.tourai.repository.RoteiroRepository;
+import br.imd.ufrn.tourai.repository.RoadmapRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,11 +15,11 @@ import java.util.Optional;
 public class FavoriteRoadmapService {
 
     private final FavoriteRoadmapRepository favoriteRoadmapRepository;
-    private final RoteiroRepository roteiroRepository;
+    private final RoadmapRepository roteiroRepository;
     private final UserService userService;
 
     public FavoriteRoadmapService(FavoriteRoadmapRepository favoriteRoadmapRepository,
-                                  RoteiroRepository roteiroRepository,
+                                  RoadmapRepository roteiroRepository,
                                   UserService userService) {
         this.favoriteRoadmapRepository = favoriteRoadmapRepository;
         this.roteiroRepository = roteiroRepository;
@@ -33,7 +33,7 @@ public class FavoriteRoadmapService {
             throw new ResourceNotFoundException("User not found with id: " + userId);
         }
 
-        Optional<Roteiro> roadmap = roteiroRepository.findById(roadmapId);
+        Optional<Roadmap> roadmap = roteiroRepository.findById(roadmapId);
         if (roadmap.isEmpty()) {
             throw new ResourceNotFoundException("Roadmap not found with id: " + roadmapId);
         }

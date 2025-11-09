@@ -94,4 +94,8 @@ public class UserService {
         if (user.isEmpty()) return false;
         return passwordEncoder.matches(password, user.get().getPassword());
     }
+
+    public User findByIdOrThrow(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: " + id));
+    }
 }

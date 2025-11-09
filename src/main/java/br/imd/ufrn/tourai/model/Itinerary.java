@@ -2,6 +2,8 @@ package br.imd.ufrn.tourai.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -27,7 +29,7 @@ public class Itinerary {
 
     @ManyToOne
     @JoinColumn(name = "roadmap_id", nullable = false)
-    private Roteiro roadmap;
+    private Roadmap roadmap;
 
     @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ItineraryActivity> activities;

@@ -13,7 +13,7 @@ import java.util.Set;
 @AllArgsConstructor
 @ToString
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-public class Roteiro {
+public class Roadmap {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,46 +21,49 @@ public class Roteiro {
     private Long id;
 
     @Column(nullable = false)
-    private String titulo;
+    private String title;
 
     @Lob
-    private String descricao;
+    @Column
+    private String description;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "roteiro_tags", joinColumns = @JoinColumn(name = "roteiro_id"))
-    @Column(name = "tag")
+    @CollectionTable(name = "roadmap_tags", joinColumns = @JoinColumn(name = "roadmap_id"))
+    @Column
     private Set<String> tags = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private VisibilidadeRoteiro visibilidade;
+    private RoadmapVisibility visibility;
 
     @Enumerated(EnumType.STRING)
-    private StatusModeracao status;
+    @Column
+    private ModerationStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private User user;
+    private User owner;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-            name = "roteiro_atividade",
-            joinColumns = @JoinColumn(name = "roteiro_id"),
-            inverseJoinColumns = @JoinColumn(name = "atividade_id")
+            name = "roadmap_activity",
+            joinColumns = @JoinColumn(name = "roadmap_id"),
+            inverseJoinColumns = @JoinColumn(name = "activity_id")
     )
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Set<Atividade> atividades = new HashSet<>();
+    private Set<Activity> activities = new HashSet<>();
 
-    public void addAtividade(Atividade atividade) {
-        this.atividades.add(atividade);
-        atividade.getRoteiros().add(this);
+    public void addActivity(Activity activity) {
+        this.activities.add(activity);
+        activity.getRoadmaps().add(this);
     }
 
-    public void removeAtividade(Atividade atividade) {
-        this.atividades.remove(atividade);
-        atividade.getRoteiros().remove(this);
+    public void removeActivity(Activity activity) {
+        this.activities.remove(activity);
+        activity.getRoadmaps().remove(this);
     }
 }
+
