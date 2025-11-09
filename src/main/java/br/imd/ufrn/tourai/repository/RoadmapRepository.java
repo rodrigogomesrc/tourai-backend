@@ -16,7 +16,7 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
 
     List<Roadmap> findByVisibilityAndStatus(RoadmapVisibility visibility, ModerationStatus status);
 
-    @Query("SELECT r FROM Roteiro r LEFT JOIN FETCH r.activities WHERE r.id = :id")
+    @Query("SELECT r FROM Roadmap r LEFT JOIN FETCH r.activities WHERE r.id = :id")
     Roadmap findByIdWithActivities(Long id);
 }
 

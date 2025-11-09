@@ -4,11 +4,11 @@ public class EvaluationResponse {
     private Long id;
     private Integer rating;
     private String comment;
-    private Integer itineraryActivityId;
+    private Long itineraryActivityId;
 
     public EvaluationResponse() {}
 
-    public EvaluationResponse(Long id, Integer rating, String comment, Integer itineraryActivityId) {
+    public EvaluationResponse(Long id, Integer rating, String comment, Long itineraryActivityId) {
         this.id = id;
         this.rating = rating;
         this.comment = comment;
@@ -27,7 +27,7 @@ public class EvaluationResponse {
         return comment;
     }
 
-    public Integer getItineraryActivityId() {
+    public Long getItineraryActivityId() {
         return itineraryActivityId;
     }
 }

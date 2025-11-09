@@ -38,3 +38,4 @@ build/
 /docker/postgres
 /minio
 /minio_data
+/docker/minio

@@ -2,6 +2,8 @@ package br.imd.ufrn.tourai.model;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,19 +20,16 @@ import lombok.Setter;
 public class ItineraryActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "itinerary_id", nullable = false)
     private Itinerary itinerary;
 
     @ManyToOne
     @JoinColumn(name = "activity_id", nullable = false)
-    private Atividade activity;
+    private Activity activity;
 
     @Column(nullable = false)
     private LocalDateTime time;

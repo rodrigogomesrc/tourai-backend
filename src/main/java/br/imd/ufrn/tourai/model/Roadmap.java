@@ -6,8 +6,7 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "Roteiro")
-@Table(name = "roteiro")
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,27 +20,27 @@ public class Roadmap {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "titulo", nullable = false)
+    @Column(nullable = false)
     private String title;
 
     @Lob
-    @Column(name = "descricao")
+    @Column
     private String description;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "roteiro_tags", joinColumns = @JoinColumn(name = "roteiro_id"))
-    @Column(name = "tag")
+    @CollectionTable(name = "roadmap_tags", joinColumns = @JoinColumn(name = "roadmap_id"))
+    @Column
     private Set<String> tags = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "visibilidade", nullable = false)
+    @Column(nullable = false)
     private RoadmapVisibility visibility;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status")
+    @Column
     private ModerationStatus status;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id", nullable = false)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
@@ -49,9 +48,9 @@ public class Roadmap {
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
-            name = "roteiro_atividade",
-            joinColumns = @JoinColumn(name = "roteiro_id"),
-            inverseJoinColumns = @JoinColumn(name = "atividade_id")
+            name = "roadmap_activity",
+            joinColumns = @JoinColumn(name = "roadmap_id"),
+            inverseJoinColumns = @JoinColumn(name = "activity_id")
     )
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

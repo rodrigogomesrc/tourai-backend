@@ -16,14 +16,14 @@ import java.util.List;
 @Repository
 public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
-    @Query("SELECT a FROM Atividade a WHERE (a.type = :systemType OR (a.type = :publicType AND a.moderationStatus = :approvedStatus)) AND LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    @Query("SELECT a FROM Activity a WHERE (a.type = :systemType OR (a.type = :publicType AND a.moderationStatus = :approvedStatus)) AND LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%'))")
     Page<Activity> findPublicByName(@Param("systemType") ActivityType systemType,
                                     @Param("publicType") ActivityType publicType,
                                     @Param("approvedStatus") ModerationStatus approvedStatus,
                                     @Param("name") String name,
                                     Pageable pageable);
 
-    @Query("SELECT DISTINCT a FROM Atividade a JOIN a.tags t WHERE (a.type = :systemType OR (a.type = :publicType AND a.moderationStatus = :approvedStatus)) AND LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) AND t IN :tags")
+    @Query("SELECT DISTINCT a FROM Activity a JOIN a.tags t WHERE (a.type = :systemType OR (a.type = :publicType AND a.moderationStatus = :approvedStatus)) AND LOWER(a.name) LIKE LOWER(CONCAT('%', :name, '%')) AND t IN :tags")
     Page<Activity> findPublicByNameAndTags(@Param("systemType") ActivityType systemType,
                                            @Param("publicType") ActivityType publicType,
                                            @Param("approvedStatus") ModerationStatus approvedStatus,

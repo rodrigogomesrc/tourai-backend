@@ -6,8 +6,9 @@ import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "Atividade") // keep original entity name for table mapping
-@Table(name = "atividade")
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,38 +21,39 @@ public class Activity {
     @EqualsAndHashCode.Include
     private Long id;
 
-    @Column(name = "nome", nullable = false)
+    @Column(nullable = false)
     private String name;
 
     @Lob
-    @Column(name = "descricao")
+    @Column
     private String description;
 
-    @Column(name = "local")
+    @Column
     private String location;
 
     @Lob
-    @Column(name = "midiaURL")
+    @Column
     private String mediaUrl;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "atividade_tags", joinColumns = @JoinColumn(name = "atividade_id"))
+    @CollectionTable(name = "activity_tags", joinColumns = @JoinColumn(name = "activity_id"))
     @Column(name = "tag")
     private Set<String> tags = new HashSet<>();
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo", nullable = false)
+    @Column(nullable = false)
     private ActivityType type;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "statusModeracao")
+    @Column
     private ModerationStatus moderationStatus;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "criador_id")
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
     @ToString.Exclude
     private User creator;
 
+    @JsonIgnore
     @ManyToMany(mappedBy = "activities", fetch = FetchType.LAZY)
     @ToString.Exclude
     private Set<Roadmap> roadmaps = new HashSet<>();
