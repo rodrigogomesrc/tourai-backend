@@ -1,7 +1,8 @@
 package br.imd.ufrn.tourai.model;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -20,6 +21,7 @@ import lombok.Setter;
 public class ItineraryActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
 
     @JsonIgnore
@@ -32,5 +34,9 @@ public class ItineraryActivity {
     private Activity activity;
 
     @Column(nullable = false)
-    private LocalDateTime time;
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
+    private OffsetDateTime time;
+
+    @Column
+    private Boolean completed = false;
 }

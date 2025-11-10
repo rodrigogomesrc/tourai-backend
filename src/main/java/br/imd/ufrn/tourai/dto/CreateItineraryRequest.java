@@ -1,10 +1,12 @@
 package br.imd.ufrn.tourai.dto;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 public record CreateItineraryRequest(Long userId, Long roadmapId, List<CreateItineraryRequestActivity> activities) {
-    public record CreateItineraryRequestActivity(Long activityId, LocalDateTime time) {
+    public static record CreateItineraryRequestActivity(Long activityId, @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX") OffsetDateTime time) {
 
     }
 }

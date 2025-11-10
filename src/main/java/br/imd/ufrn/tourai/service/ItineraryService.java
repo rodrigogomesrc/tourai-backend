@@ -106,11 +106,17 @@ public class ItineraryService {
             for (ItineraryActivity activity : itinerary.getActivities()) {
                 Optional<UpdateItineraryRequest.UpdateItineraryRequestActivity> updateAcitivty = request.activities()
                     .stream()
-                    .filter(other -> other.itineraryActivityId() == activity.getId())
+                    .filter(other -> other.activityId() == activity.getActivity().getId())
                     .findFirst();
 
                 if (updateAcitivty.isPresent()) {
-                    activity.setTime(updateAcitivty.get().time());
+                    if (updateAcitivty.get().time() != null) {
+                        activity.setTime(updateAcitivty.get().time());
+                    }
+
+                    if (updateAcitivty.get().completed() != null) {
+                        activity.setCompleted(updateAcitivty.get().completed());
+                    }
                 }
             }
         }
