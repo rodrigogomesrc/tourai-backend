@@ -30,7 +30,6 @@ public class Evaluation {
     @Column(nullable = false)
     private Integer rating;
 
-    @Lob
     private String comment;
 
     @OneToOne

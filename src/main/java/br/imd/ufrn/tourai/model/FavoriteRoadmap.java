@@ -22,7 +22,7 @@ public class FavoriteRoadmap {
     @Setter
     @Getter
     @ManyToOne
-    @JoinColumn(name = "roteiro_id")
+    @JoinColumn(name = "roadmap_id")
     private Roadmap roadmap;
 
 }

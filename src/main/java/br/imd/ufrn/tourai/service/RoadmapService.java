@@ -161,5 +161,14 @@ public class RoadmapService {
         roadmap.setStatus(newStatus);
         return roadmapRepository.save(roadmap);
     }
+
+    @Transactional(readOnly = true)
+    public List<Roadmap> listFavoriteRoadmaps(User loggedUser) {
+        if (loggedUser == null || loggedUser.getId() == null) {
+            throw new IllegalArgumentException("Invalid or not logged user.");
+        }
+        return roadmapRepository.findFavoritedByUserId(loggedUser.getId());
+    }
+
 }
 
