@@ -1,13 +1,10 @@
 package br.imd.ufrn.tourai.controller;
 
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
-import br.imd.ufrn.tourai.model.FavoriteRoadmap;
 import br.imd.ufrn.tourai.service.FavoriteRoadmapService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/favorites/roadmaps")

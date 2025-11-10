@@ -23,7 +23,6 @@ public class Roadmap {
     @Column(nullable = false)
     private String title;
 
-    @Lob
     @Column
     private String description;
 
