@@ -24,14 +24,12 @@ public class Activity {
     @Column(nullable = false)
     private String name;
 
-    @Lob
     @Column
     private String description;
 
     @Column
     private String location;
 
-    @Lob
     @Column
     private String mediaUrl;
 

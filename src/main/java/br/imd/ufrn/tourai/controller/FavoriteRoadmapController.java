@@ -43,13 +43,4 @@ public class FavoriteRoadmapController {
         }
     }
 
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<FavoriteRoadmap>> getUserFavorites(@PathVariable Long userId) {
-        try {
-            List<FavoriteRoadmap> favorites = favoriteRoadmapService.findByUserId(userId);
-            return ResponseEntity.ok(favorites);
-        } catch (ResourceNotFoundException e) {
-            return ResponseEntity.notFound().build();
-        }
-    }
 }

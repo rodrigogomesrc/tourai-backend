@@ -139,4 +139,16 @@ public class RoadmapController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
+    @GetMapping("/favorites")
+    public ResponseEntity<?> listFavorites(@RequestParam Long userId) {
+        try {
+            User user = userService.findByIdOrThrow(userId);
+            return ResponseEntity.ok(roadmapService.listFavoriteRoadmaps(user));
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
