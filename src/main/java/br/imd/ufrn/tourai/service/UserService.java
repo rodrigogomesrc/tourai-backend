@@ -34,9 +34,10 @@ public class UserService {
             throw new ConflictException("Email já cadastrado");
         }
 
-        String password = userReq.getPassword() == null ? "" : userReq.getPassword();
-        String encoded = passwordEncoder.encode(password);
-        User user = new User(userReq.getName(), userReq.getEmail(), encoded);
+    String password = userReq.getPassword() == null ? "" : userReq.getPassword();
+    String encoded = passwordEncoder.encode(password);
+    User user = new User(userReq.getName(), userReq.getEmail(), encoded,
+        userReq.getProfilePhotoUrl(), userReq.getBio(), userReq.getInterests());
         User saved = userRepository.save(user);
         return saved;
     }
@@ -60,7 +61,7 @@ public class UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: " + id));
 
-        if (userReq.getName() != null) user.setName(userReq.getName());
+    if (userReq.getName() != null) user.setName(userReq.getName());
 
         if (userReq.getEmail() != null && !userReq.getEmail().isBlank()) {
             Optional<User> other = userRepository.findByEmail(userReq.getEmail());
@@ -72,6 +73,18 @@ public class UserService {
 
         if (userReq.getPassword() != null && !userReq.getPassword().isBlank()) {
             user.setPassword(passwordEncoder.encode(userReq.getPassword()));
+        }
+
+        if (userReq.getProfilePhotoUrl() != null) {
+            user.setProfilePhotoUrl(userReq.getProfilePhotoUrl());
+        }
+
+        if (userReq.getBio() != null) {
+            user.setBio(userReq.getBio());
+        }
+
+        if (userReq.getInterests() != null) {
+            user.setInterests(userReq.getInterests());
         }
 
         User saved = userRepository.save(user);

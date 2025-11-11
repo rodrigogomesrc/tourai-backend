@@ -100,5 +100,7 @@ public class PostService {
         return likeRepository.findByPostIdAndLikerId(postId, Math.toIntExact(userId)).isPresent();
     }
 
-
+    public Long countByUserId(Long userId) {
+        return postRepository.countByUserId(userId);
+    }
 }

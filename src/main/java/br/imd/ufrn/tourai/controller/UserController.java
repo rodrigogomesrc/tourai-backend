@@ -19,16 +19,28 @@ import br.imd.ufrn.tourai.dto.LoginRequest;
 import br.imd.ufrn.tourai.dto.UserRequest;
 import br.imd.ufrn.tourai.dto.UserResponse;
 import br.imd.ufrn.tourai.model.User;
+import br.imd.ufrn.tourai.service.ItineraryService;
+import br.imd.ufrn.tourai.service.PostService;
+import br.imd.ufrn.tourai.service.RoadmapService;
 import br.imd.ufrn.tourai.service.UserService;
+
+import org.springframework.web.bind.annotation.*;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
     private final UserService userService;
+    private final RoadmapService roadmapService;
+    private final ItineraryService itineraryService;
+    private final PostService postService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService, RoadmapService roadmapService, ItineraryService itineraryService, PostService postService) {
         this.userService = userService;
+        this.roadmapService = roadmapService;
+        this.itineraryService = itineraryService;
+        this.postService = postService;
     }
 
     @PostMapping
@@ -76,6 +88,24 @@ public class UserController {
     }
 
     private UserResponse toResponse(User user) {
-        return new UserResponse(user.getId(), user.getName(), user.getEmail());
+        return new UserResponse(user.getId(), user.getName(), user.getEmail(),
+                user.getProfilePhotoUrl(), user.getBio(), user.getInterests());
+    }
+
+    @GetMapping("/{id}/stats")
+    public ResponseEntity<Map<String, Long>> getUserStats(@PathVariable Long id) {
+        userService.findByIdOrThrow(id);
+
+        Long totalRoadmaps = roadmapService.countByOwnerId(id);
+        Long totalItineraries = itineraryService.countByUserId(id);
+        Long totalPosts = postService.countByUserId(id);
+
+        Map<String, Long> stats = Map.of(
+            "roteiros", totalRoadmaps,
+            "itinerarios", totalItineraries,
+            "postagens", totalPosts
+        );
+
+        return ResponseEntity.ok(stats);
     }
 }

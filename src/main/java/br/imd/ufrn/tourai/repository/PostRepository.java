@@ -19,4 +19,5 @@ public interface PostRepository extends JpaRepository<Post, Integer> {
     @Query("SELECT p FROM Post p WHERE p.postDate < :dateLastPost ORDER BY p.postDate DESC")
     List<Post> findOlder(@Param("dateLastPost") Instant dateLastPost, Pageable pageable);
 
+    Long countByUserId(Long userId);
 }

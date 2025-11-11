@@ -25,6 +25,7 @@ public interface RoadmapRepository extends JpaRepository<Roadmap, Long> {
             "ORDER BY r.title ASC")
     List<Roadmap> findFavoritedByUserId(@Param("userId") Long userId);
 
+    Long countByOwnerId(Long ownerId);
 
 }
 
