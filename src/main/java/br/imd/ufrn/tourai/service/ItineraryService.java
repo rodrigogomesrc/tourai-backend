@@ -137,4 +137,8 @@ public class ItineraryService {
     public void deleteById(Long id) {
         itineraryRepository.deleteById(id);
     }
+
+    public Long countByUserId(Long userId) {
+        return itineraryRepository.countByUserId(userId);
+    }
 }

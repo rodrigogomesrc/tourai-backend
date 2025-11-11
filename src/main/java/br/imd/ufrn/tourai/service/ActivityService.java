@@ -63,7 +63,13 @@ public class ActivityService {
             activity.setTags(new HashSet<>(newActivity.getTags()));
         }
         activity.setCreator(loggedUser);
-        activity.setType(newActivity.getType());
+        
+        if(activity.getType() == null){
+            activity.setType(ActivityType.SYSTEM);
+        }else{
+            activity.setType(newActivity.getType());
+        }
+
         if (activity.getType() == ActivityType.CUSTOM_PUBLIC) {
             activity.setModerationStatus(ModerationStatus.PENDING);
         } else {

@@ -21,7 +21,6 @@ import lombok.Setter;
 public class ItineraryActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonIgnore
     private Long id;
 
     @JsonIgnore

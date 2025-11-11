@@ -170,5 +170,10 @@ public class RoadmapService {
         return roadmapRepository.findFavoritedByUserId(loggedUser.getId());
     }
 
+    @Transactional(readOnly = true)
+    public Long countByOwnerId(Long userId) {
+        return roadmapRepository.countByOwnerId(userId);
+    }
+
 }
 

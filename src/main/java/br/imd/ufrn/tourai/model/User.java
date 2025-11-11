@@ -1,11 +1,19 @@
 package br.imd.ufrn.tourai.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,6 +34,15 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    private String profilePhotoUrl;
+
+    private String bio;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_interests", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "interest")
+    private Set<String> interests = new HashSet<>();
+
     public User() {
     }
 
@@ -33,6 +50,15 @@ public class User {
         this.name = name;
         this.email = email;
         this.password = password;
+    }
+
+    public User(String name, String email, String password, String profilePhotoUrl, String bio, Set<String> interests) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.profilePhotoUrl = profilePhotoUrl;
+        this.bio = bio;
+        if (interests != null) this.interests = interests;
     }
 
     public Long getId() {
@@ -65,5 +91,29 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getProfilePhotoUrl() {
+        return profilePhotoUrl;
+    }
+
+    public void setProfilePhotoUrl(String profilePhotoUrl) {
+        this.profilePhotoUrl = profilePhotoUrl;
+    }
+
+    public String getBio() {
+        return bio;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public Set<String> getInterests() {
+        return interests;
+    }
+
+    public void setInterests(Set<String> interests) {
+        this.interests = interests;
     }
 }
