@@ -1,7 +1,10 @@
 package br.imd.ufrn.tourai.service;
 
+import java.time.OffsetDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.stereotype.Service;
 
@@ -79,7 +82,24 @@ public class ItineraryService {
     public Itinerary create(CreateItineraryRequest request) {
         Itinerary itinerary = fromDTOToEntity(request);
 
+        Set<String> seenTimes = new HashSet<>();
+
+        for (CreateItineraryRequest.CreateItineraryRequestActivity activity : request.activities()) {
+            OffsetDateTime normalized = activity.time()
+                .withSecond(0)
+                .withNano(0);
+
+            String key = normalized.toInstant().toString();
+
+            if (!seenTimes.add(key)) {
+                throw new IllegalArgumentException(
+                    "There are activities with the same time: " + normalized
+                );
+            }
+        }
+
         for (Activity activity : itinerary.getRoadmap().getActivities()) {
+
             boolean hasActivity = itinerary.getActivities()
                 .stream()
                 .anyMatch((itineraryActivity) -> itineraryActivity.getActivity().getId() == activity.getId());
@@ -102,6 +122,8 @@ public class ItineraryService {
             .findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Itinerary with id " + id + " not found"));
 
+        Set<String> seenTimes = new HashSet<>();
+
         if (request.activities() != null) {
             for (ItineraryActivity activity : itinerary.getActivities()) {
                 Optional<UpdateItineraryRequest.UpdateItineraryRequestActivity> updateAcitivty = request.activities()
@@ -117,6 +139,18 @@ public class ItineraryService {
                     if (updateAcitivty.get().completed() != null) {
                         activity.setCompleted(updateAcitivty.get().completed());
                     }
+                }
+
+                OffsetDateTime normalized = activity.getTime()
+                    .withSecond(0)
+                    .withNano(0);
+
+                String key = normalized.toInstant().toString();
+
+                if (!seenTimes.add(key)) {
+                    throw new IllegalArgumentException(
+                        "There are activities with the same time: " + normalized
+                    );
                 }
             }
         }
