@@ -5,7 +5,6 @@ import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
 import br.imd.ufrn.tourai.model.PostLike;
 import br.imd.ufrn.tourai.model.Post;
 import br.imd.ufrn.tourai.model.User;
-import br.imd.ufrn.tourai.repository.CommentRepository;
 import br.imd.ufrn.tourai.repository.LikeRepository;
 import br.imd.ufrn.tourai.repository.PostRepository;
 import jakarta.transaction.Transactional;
@@ -20,16 +19,13 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
     private final UserService userService;
 
     public PostService(PostRepository postRepository,
-                       CommentRepository commentRepository,
                        LikeRepository likeRepository,
                        UserService userService) {
         this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
         this.userService = userService;
     }
