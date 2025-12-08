@@ -6,9 +6,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import br.imd.ufrn.tourai.dto.CreateItineraryRequest;
+import br.imd.ufrn.tourai.dto.ItineraryType;
 import br.imd.ufrn.tourai.dto.UpdateItineraryRequest;
 import br.imd.ufrn.tourai.exception.BadRequestException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
@@ -158,8 +161,13 @@ public class ItineraryService {
         return itineraryRepository.save(itinerary);
     }
 
-    public List<Itinerary> findByUserId(Long userId) {
-        return itineraryRepository.findByUserId(userId);
+    public Page<Itinerary> findByUserId(Long userId, ItineraryType type, String search, Pageable pageable) {
+        return itineraryRepository.findByUserId(
+            userId,
+            (type == null ? null : type.toString()),
+            (search == null ? null : search.toLowerCase()),
+            pageable
+        );
     }
 
     public Itinerary findByIdOrThrow(Long id) {
