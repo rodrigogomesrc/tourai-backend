@@ -1,5 +1,6 @@
 package br.imd.ufrn.tourai.service;
 
+import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
 import br.imd.ufrn.tourai.model.Notification;
 import br.imd.ufrn.tourai.model.NotificationType;
 import br.imd.ufrn.tourai.model.User;
@@ -14,9 +15,11 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
+    private final UserService userService;
 
-    public NotificationService(NotificationRepository notificationRepository) {
+    public NotificationService(NotificationRepository notificationRepository, UserService userService) {
         this.notificationRepository = notificationRepository;
+        this.userService = userService;
 
     }
 
@@ -30,15 +33,26 @@ public class NotificationService {
     }
 
     public List<Notification> getRecentNotifications(Integer userId, int quantity) {
+        userService.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         return notificationRepository.findRecent(userId, PageRequest.of(0, quantity));
     }
 
     public List<Notification> getUnreadNotifications(Integer userId) {
+
+        userService.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         return notificationRepository.findUnread(userId);
     }
 
     public void markAsReceived(Integer notificationId) {
-        notificationRepository.markAsReceived(notificationId);
+
+      notificationRepository.findById(Long.valueOf(notificationId))
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
+      notificationRepository.markAsReceived(notificationId);
     }
 
 }
