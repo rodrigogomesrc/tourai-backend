@@ -75,7 +75,9 @@ public class InviteService {
         invite.setUser(user);
         inviteRepository.save(invite);
 
-        notificationService.create(user, inviter, NotificationType.ROADMAP_INVITATION);
+        notificationService.create(
+                user, inviter, NotificationType.ROADMAP_INVITATION,
+                itinerary.getRoadmap().getDescription(), itinerary.getId());
 
         return invite;
     }

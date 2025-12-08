@@ -82,7 +82,8 @@ public class PostService {
 
         User postUser = post.getUser();
         if (!postUser.getId().equals(likerId)) {
-            notificationService.create(postUser, liker.get(), NotificationType.LIKE);
+            notificationService.create(
+                    postUser, liker.get(), NotificationType.LIKE, "", Long.valueOf(post.getId()));
         }
 
         PostLike postLike = new PostLike();

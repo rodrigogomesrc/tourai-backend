@@ -54,7 +54,8 @@ public class CommentService {
 
         User postUser = post.getUser();
         if (!postUser.getId().equals(commentatorId)) {
-            notificationService.create(postUser, commentator.get(), NotificationType.COMMENT);
+            notificationService.create(
+                    postUser, commentator.get(), NotificationType.COMMENT, content, Long.valueOf(post.getId()));
         }
 
         return commentRepository.save(comment);
