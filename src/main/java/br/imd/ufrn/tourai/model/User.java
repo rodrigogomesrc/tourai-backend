@@ -116,4 +116,9 @@ public class User {
     public void setInterests(Set<String> interests) {
         this.interests = interests;
     }
+
+    @Override
+    public int hashCode() {
+        return id != null ? id.hashCode() : 0;
+    }
 }
