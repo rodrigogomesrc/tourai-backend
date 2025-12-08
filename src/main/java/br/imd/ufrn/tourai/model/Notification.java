@@ -39,5 +39,12 @@ public class Notification {
     @Setter
     private Instant createdAt;
 
+    @Getter
+    @Setter
+    private String payload;
+
+    @Getter
+    @Setter
+    private Long entityId;
 
 }

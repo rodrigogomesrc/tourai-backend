@@ -23,12 +23,19 @@ public class NotificationService {
 
     }
 
-    public Notification create(User destination, User source, NotificationType type){
+    public Notification create(User destination,
+                               User source,
+                               NotificationType type,
+                               String payload,
+                               Long entityId) {
+
         Notification newNotification = new Notification();
         newNotification.setDestination(destination);
         newNotification.setSource(source);
         newNotification.setType(type);
         newNotification.setCreatedAt(Instant.now());
+        newNotification.setPayload(payload);
+        newNotification.setEntityId(entityId);
         return this.notificationRepository.save(newNotification);
     }
 
