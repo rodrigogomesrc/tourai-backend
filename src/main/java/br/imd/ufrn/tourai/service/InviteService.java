@@ -3,6 +3,7 @@ package br.imd.ufrn.tourai.service;
 import java.util.List;
 import java.util.Optional;
 
+import br.imd.ufrn.tourai.model.NotificationType;
 import org.springframework.stereotype.Service;
 
 import br.imd.ufrn.tourai.dto.CreateInviteRequest;
@@ -22,8 +23,15 @@ public class InviteService {
     private final InviteRepository inviteRepository;
     private final ItineraryRepository itineraryRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public InviteService(InviteRepository inviteRepository, ItineraryRepository itineraryRepository, UserRepository userRepository) {
+    public InviteService(
+            InviteRepository inviteRepository,
+            ItineraryRepository itineraryRepository,
+            UserRepository userRepository,
+            NotificationService notificationService) {
+
+        this.notificationService = notificationService;
         this.inviteRepository = inviteRepository;
         this.itineraryRepository = itineraryRepository;
         this.userRepository = userRepository;
@@ -31,11 +39,16 @@ public class InviteService {
 
     @Transactional
     public Invite create(CreateInviteRequest request) {
+
+        // TODO: adicionar verificação se o usuário que está enviando o convite é o dono do itinerário
+
         Itinerary itinerary = itineraryRepository
             .findById(request.itineraryId())
             .orElseThrow(() ->
                 new ResourceNotFoundException("Itinerary with ID " + request.itineraryId() + " not found")
             );
+
+        User inviter = itinerary.getUser();
 
         if (itinerary.getUser().getId().equals(request.userId())) {
             throw new BadRequestException("Cannot invite the owner of the itinerary");
@@ -60,8 +73,9 @@ public class InviteService {
         Invite invite = new Invite();
         invite.setItinerary(itinerary);
         invite.setUser(user);
-
         inviteRepository.save(invite);
+
+        notificationService.create(user, inviter, NotificationType.ROADMAP_INVITATION);
 
         return invite;
     }

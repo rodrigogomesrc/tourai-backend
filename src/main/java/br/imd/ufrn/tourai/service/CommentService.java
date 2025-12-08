@@ -3,6 +3,7 @@ package br.imd.ufrn.tourai.service;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
 import br.imd.ufrn.tourai.exception.UnauthorizedException;
 import br.imd.ufrn.tourai.model.Comment;
+import br.imd.ufrn.tourai.model.NotificationType;
 import br.imd.ufrn.tourai.model.Post;
 import br.imd.ufrn.tourai.model.User;
 import br.imd.ufrn.tourai.repository.CommentRepository;
@@ -21,11 +22,18 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final UserService userService;
     private final PostRepository postRepository;
+    private final NotificationService notificationService;
 
-    public CommentService(CommentRepository commentRepository, UserService userService, PostRepository postRepository) {
+    public CommentService(
+            CommentRepository commentRepository,
+            UserService userService,
+            PostRepository postRepository,
+            NotificationService notificationService) {
+
         this.commentRepository = commentRepository;
         this.userService = userService;
         this.postRepository = postRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -37,11 +45,18 @@ public class CommentService {
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
+
         Comment comment = new Comment();
         comment.setPost(post);
         comment.setCommentator(commentator.get());
         comment.setDate(Instant.now());
         comment.setContent(content);
+
+        User postUser = post.getUser();
+        if (!postUser.getId().equals(commentatorId)) {
+            notificationService.create(postUser, commentator.get(), NotificationType.COMMENT);
+        }
+
         return commentRepository.save(comment);
     }
 

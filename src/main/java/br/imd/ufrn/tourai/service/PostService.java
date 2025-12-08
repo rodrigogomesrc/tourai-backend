@@ -2,10 +2,10 @@ package br.imd.ufrn.tourai.service;
 
 import br.imd.ufrn.tourai.exception.ConflictException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
+import br.imd.ufrn.tourai.model.NotificationType;
 import br.imd.ufrn.tourai.model.PostLike;
 import br.imd.ufrn.tourai.model.Post;
 import br.imd.ufrn.tourai.model.User;
-import br.imd.ufrn.tourai.repository.CommentRepository;
 import br.imd.ufrn.tourai.repository.LikeRepository;
 import br.imd.ufrn.tourai.repository.PostRepository;
 import jakarta.transaction.Transactional;
@@ -20,18 +20,18 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public PostService(PostRepository postRepository,
-                       CommentRepository commentRepository,
                        LikeRepository likeRepository,
-                       UserService userService) {
+                       UserService userService,
+                       NotificationService notificationService) {
         this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     public Post save(Post post, Integer userId) {
@@ -78,6 +78,11 @@ public class PostService {
 
         if (alreadyLiked) {
             throw new ConflictException("User already liked this post");
+        }
+
+        User postUser = post.getUser();
+        if (!postUser.getId().equals(likerId)) {
+            notificationService.create(postUser, liker.get(), NotificationType.LIKE);
         }
 
         PostLike postLike = new PostLike();
