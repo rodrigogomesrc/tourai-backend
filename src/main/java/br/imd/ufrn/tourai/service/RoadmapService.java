@@ -4,6 +4,8 @@ import br.imd.ufrn.tourai.model.*;
 import br.imd.ufrn.tourai.repository.RoadmapRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,11 +26,11 @@ public class RoadmapService {
     private ActivityService activityService;
 
     @Transactional(readOnly = true)
-    public List<Roadmap> listMyRoadmaps(User loggedUser) {
+    public Page<Roadmap> listMyRoadmaps(User loggedUser, Pageable pageable) {
         if (loggedUser == null || loggedUser.getId() == null) {
             throw new IllegalArgumentException("Invalid or not logged user.");
         }
-        return roadmapRepository.findByOwnerIdOrderByTitleAsc(loggedUser.getId());
+        return roadmapRepository.findByOwnerIdOrderByTitleAsc(loggedUser.getId(), pageable);
     }
 
     @Transactional
@@ -145,8 +147,8 @@ public class RoadmapService {
     }
 
     @Transactional(readOnly = true)
-    public List<Roadmap> listPendingModeration() {
-        return roadmapRepository.findByVisibilityAndStatus(RoadmapVisibility.PUBLIC, ModerationStatus.PENDING);
+    public Page<Roadmap> listPendingModeration(Pageable pageable) {
+        return roadmapRepository.findByVisibilityAndStatus(RoadmapVisibility.PUBLIC, ModerationStatus.PENDING, pageable);
     }
 
     @Transactional
@@ -163,11 +165,11 @@ public class RoadmapService {
     }
 
     @Transactional(readOnly = true)
-    public List<Roadmap> listFavoriteRoadmaps(User loggedUser) {
+    public Page<Roadmap> listFavoriteRoadmaps(User loggedUser, Pageable pageable) {
         if (loggedUser == null || loggedUser.getId() == null) {
             throw new IllegalArgumentException("Invalid or not logged user.");
         }
-        return roadmapRepository.findFavoritedByUserId(loggedUser.getId());
+        return roadmapRepository.findFavoritedByUserId(loggedUser.getId(), pageable);
     }
 
     @Transactional(readOnly = true)

@@ -6,6 +6,9 @@ import br.imd.ufrn.tourai.model.User;
 import br.imd.ufrn.tourai.service.RoadmapService;
 import br.imd.ufrn.tourai.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,14 +28,17 @@ public class RoadmapController {
     }
 
     @GetMapping("/mine")
-    public ResponseEntity<?> listMine(@RequestParam Long userId) {
+    public ResponseEntity<Page<Roadmap>> listMine(
+            @RequestParam Long userId,
+            @PageableDefault(size = 10) Pageable pageable) { // Injeta paginação
         try {
             User user = userService.findByIdOrThrow(userId);
-            return ResponseEntity.ok(roadmapService.listMyRoadmaps(user));
+            return ResponseEntity.ok(roadmapService.listMyRoadmaps(user, pageable));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            // Em paginação, geralmente retornamos Page vazio em vez de erro, mas mantive sua lógica
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -123,8 +129,8 @@ public class RoadmapController {
     }
 
     @GetMapping("/moderation/pending")
-    public ResponseEntity<List<Roadmap>> pendingModeration() {
-        return ResponseEntity.ok(roadmapService.listPendingModeration());
+    public ResponseEntity<Page<Roadmap>> pendingModeration(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(roadmapService.listPendingModeration(pageable));
     }
 
     @PutMapping("/{id}/moderation")
@@ -141,14 +147,16 @@ public class RoadmapController {
     }
 
     @GetMapping("/favorites")
-    public ResponseEntity<?> listFavorites(@RequestParam Long userId) {
+    public ResponseEntity<Page<Roadmap>> listFavorites(
+            @RequestParam Long userId,
+            @PageableDefault(size = 10) Pageable pageable) {
         try {
             User user = userService.findByIdOrThrow(userId);
-            return ResponseEntity.ok(roadmapService.listFavoriteRoadmaps(user));
+            return ResponseEntity.ok(roadmapService.listFavoriteRoadmaps(user, pageable));
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            return ResponseEntity.badRequest().build();
         }
     }
 }
