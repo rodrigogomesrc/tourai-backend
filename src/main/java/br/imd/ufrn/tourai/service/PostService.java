@@ -51,12 +51,22 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public List<Post> getRecentPosts(int quantity, String search) {
-        return postRepository.findLast(search, PageRequest.of(0, quantity));
+    public List<Post> getRecentPosts(Long userId, int quantity, String search) {
+        String searchTerm = null;
+        if (search != null && !search.isBlank()) {
+            searchTerm = "%" + search.toLowerCase() + "%";
+        }
+
+        return postRepository.findLast(userId, searchTerm, PageRequest.of(0, quantity));
     }
 
-    public List<Post> getOlderPosts(Instant lastPostDate, int quantity, String search) {
-        return postRepository.findOlder(lastPostDate, search, PageRequest.of(0, quantity));
+    public List<Post> getOlderPosts(Long userId, Instant lastPostDate, int quantity, String search) {
+        String searchTerm = null;
+        if (search != null && !search.isBlank()) {
+            searchTerm = "%" + search.toLowerCase() + "%";
+        }
+
+        return postRepository.findOlder(userId, lastPostDate, searchTerm, PageRequest.of(0, quantity));
     }
 
     @Transactional
