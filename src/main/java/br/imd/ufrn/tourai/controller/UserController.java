@@ -6,6 +6,8 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,14 +17,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.imd.ufrn.tourai.dto.AuthResponse;
 import br.imd.ufrn.tourai.dto.LoginRequest;
 import br.imd.ufrn.tourai.dto.UserRequest;
 import br.imd.ufrn.tourai.dto.UserResponse;
+import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
 import br.imd.ufrn.tourai.model.User;
 import br.imd.ufrn.tourai.service.ItineraryService;
 import br.imd.ufrn.tourai.service.PostService;
 import br.imd.ufrn.tourai.service.RoadmapService;
 import br.imd.ufrn.tourai.service.UserService;
+import br.imd.ufrn.tourai.service.AuthenticationJwtService;
 
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
@@ -36,11 +41,16 @@ public class UserController {
     private final ItineraryService itineraryService;
     private final PostService postService;
 
-    public UserController(UserService userService, RoadmapService roadmapService, ItineraryService itineraryService, PostService postService) {
+    private final AuthenticationManager authenticationManager;
+    private final AuthenticationJwtService jwtService;
+
+    public UserController(UserService userService, RoadmapService roadmapService, ItineraryService itineraryService, PostService postService, AuthenticationManager authenticationManager, AuthenticationJwtService jwtService) {
         this.userService = userService;
         this.roadmapService = roadmapService;
         this.itineraryService = itineraryService;
         this.postService = postService;
+        this.authenticationManager = authenticationManager;
+        this.jwtService = jwtService;
     }
 
     @PostMapping
@@ -77,14 +87,23 @@ public class UserController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<UserResponse> login(@RequestBody LoginRequest requestLogin) {
-        boolean isAuthenticated = userService.authenticate(requestLogin.getEmail(), requestLogin.getPassword());
-        if (!isAuthenticated) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-        return userService.findByEmail(requestLogin.getEmail())
-               .map(user -> ResponseEntity.ok(toResponse(user)))
-                .orElseGet(() -> ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build());
+    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
+        );
+
+        User user = userService.findByEmail(request.getEmail())
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        var userDetails = org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .roles("USER")
+                .build();
+
+        String accessToken = jwtService.generateToken(userDetails);
+
+        return ResponseEntity.ok(new AuthResponse(accessToken, toResponse(user)));
     }
 
     private UserResponse toResponse(User user) {
