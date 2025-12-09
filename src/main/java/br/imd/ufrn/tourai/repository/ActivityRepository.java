@@ -33,6 +33,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
 
     List<Activity> findByCreatorId(Long creatorId);
 
-    List<Activity> findByTypeAndModerationStatus(ActivityType type, ModerationStatus status);
+    Page<Activity> findByTypeAndModerationStatus(ActivityType type, ModerationStatus status, Pageable pageable);
 }
 

@@ -84,8 +84,8 @@ public class ActivityService {
     }
 
     @Transactional(readOnly = true)
-    public List<Activity> listPendingModeration() {
-        return activityRepository.findByTypeAndModerationStatus(ActivityType.CUSTOM_PUBLIC, ModerationStatus.PENDING);
+    public Page<Activity> listPendingModeration(Pageable pageable) {
+        return activityRepository.findByTypeAndModerationStatus(ActivityType.CUSTOM_PUBLIC, ModerationStatus.PENDING, pageable);
     }
 
     @Transactional
