@@ -35,7 +35,6 @@ public class PostService {
     }
 
     public Post save(Post post, Integer userId) {
-
         User user = userService.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         post.setUser(user);
@@ -52,18 +51,16 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public List<Post> getRecentPosts(int quantity) {
-        return postRepository.findLast(PageRequest.of(0, quantity));
+    public List<Post> getRecentPosts(int quantity, String search) {
+        return postRepository.findLast(search, PageRequest.of(0, quantity));
     }
 
-    public List<Post> getOlderPosts(Instant lastPostDate, int quantity) {
-        return postRepository.findOlder(lastPostDate, PageRequest.of(0, quantity));
+    public List<Post> getOlderPosts(Instant lastPostDate, int quantity, String search) {
+        return postRepository.findOlder(lastPostDate, search, PageRequest.of(0, quantity));
     }
-
 
     @Transactional
     public void addLike(Integer postId, Long likerId) {
-
         Optional<User> liker = userService.findById(likerId);
         if (liker.isEmpty()) {
             throw new ResourceNotFoundException("User not found");
