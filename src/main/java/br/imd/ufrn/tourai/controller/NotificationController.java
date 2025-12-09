@@ -1,6 +1,7 @@
 package br.imd.ufrn.tourai.controller;
 
 import br.imd.ufrn.tourai.model.Notification;
+import br.imd.ufrn.tourai.model.NotificationType;
 import br.imd.ufrn.tourai.service.NotificationService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,15 +21,19 @@ public class NotificationController {
     @GetMapping("/recent")
     public ResponseEntity<List<Notification>> listRecent(
             @RequestParam Integer userId,
-            @RequestParam(defaultValue = "10") int quantity) {
+            @RequestParam(defaultValue = "10") int quantity,
+            @RequestParam(required = false) NotificationType type) {
 
-        List<Notification> notifications = notificationService.getRecentNotifications(userId, quantity);
+        List<Notification> notifications = notificationService.getRecentNotifications(userId, quantity, type);
         return ResponseEntity.ok(notifications);
     }
 
     @GetMapping("/unread")
-    public ResponseEntity<List<Notification>> listUnread(@RequestParam Integer userId) {
-        List<Notification> notifications = notificationService.getUnreadNotifications(userId);
+    public ResponseEntity<List<Notification>> listUnread(
+            @RequestParam Integer userId,
+            @RequestParam(required = false) NotificationType type) {
+
+        List<Notification> notifications = notificationService.getUnreadNotifications(userId, type);
         return ResponseEntity.ok(notifications);
     }
 

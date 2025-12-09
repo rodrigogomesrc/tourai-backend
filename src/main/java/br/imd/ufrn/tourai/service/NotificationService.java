@@ -20,7 +20,6 @@ public class NotificationService {
     public NotificationService(NotificationRepository notificationRepository, UserService userService) {
         this.notificationRepository = notificationRepository;
         this.userService = userService;
-
     }
 
     public Notification create(User destination,
@@ -36,30 +35,30 @@ public class NotificationService {
         newNotification.setCreatedAt(Instant.now());
         newNotification.setPayload(payload);
         newNotification.setEntityId(entityId);
+        newNotification.setReceived(false); // Garantindo padrão false
         return this.notificationRepository.save(newNotification);
     }
 
-    public List<Notification> getRecentNotifications(Integer userId, int quantity) {
+    public List<Notification> getRecentNotifications(Integer userId, int quantity, NotificationType type) {
         userService.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        return notificationRepository.findRecent(userId, PageRequest.of(0, quantity));
+        return notificationRepository.findRecent(userId, type, PageRequest.of(0, quantity));
     }
 
-    public List<Notification> getUnreadNotifications(Integer userId) {
+    public List<Notification> getUnreadNotifications(Integer userId, NotificationType type) {
 
         userService.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        return notificationRepository.findUnread(userId);
+        return notificationRepository.findUnread(userId, type);
     }
 
     public void markAsReceived(Integer notificationId) {
-
-      notificationRepository.findById(Long.valueOf(notificationId))
+        notificationRepository.findById(Long.valueOf(notificationId))
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
-      notificationRepository.markAsReceived(notificationId);
+        notificationRepository.markAsReceived(notificationId);
     }
 
 }

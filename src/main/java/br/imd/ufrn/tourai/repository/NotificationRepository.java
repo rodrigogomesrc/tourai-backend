@@ -1,6 +1,7 @@
 package br.imd.ufrn.tourai.repository;
 
 import br.imd.ufrn.tourai.model.Notification;
+import br.imd.ufrn.tourai.model.NotificationType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,11 +15,11 @@ import java.util.List;
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    @Query("SELECT n FROM Notification n WHERE n.destination.id = :userId ORDER BY n.createdAt DESC")
-    List<Notification> findRecent(@Param("userId") Integer userId, Pageable pageable);
+    @Query("SELECT n FROM Notification n WHERE n.destination.id = :userId AND (:type IS NULL OR n.type = :type) ORDER BY n.createdAt DESC")
+    List<Notification> findRecent(@Param("userId") Integer userId, @Param("type") NotificationType type, Pageable pageable);
 
-    @Query("SELECT n FROM Notification n WHERE n.destination.id = :userId AND n.received = false ORDER BY n.createdAt DESC")
-    List<Notification> findUnread(@Param("userId") Integer userId);
+    @Query("SELECT n FROM Notification n WHERE n.destination.id = :userId AND n.received = false AND (:type IS NULL OR n.type = :type) ORDER BY n.createdAt DESC")
+    List<Notification> findUnread(@Param("userId") Integer userId, @Param("type") NotificationType type);
 
     @Transactional
     @Modifying
