@@ -48,18 +48,22 @@ public class PostController {
 
     @GetMapping("/new")
     public ResponseEntity<List<Post>> listNewer(
+            @RequestParam Integer userId,
             @RequestParam(defaultValue = "10") int quantity,
             @RequestParam(required = false) String search) {
-        List<Post> posts = postService.getRecentPosts(quantity, search);
+
+        List<Post> posts = postService.getRecentPosts(Long.valueOf(userId), quantity, search);
         return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/older")
     public ResponseEntity<List<Post>> listOlder(
+            @RequestParam Integer userId,
             @RequestParam Instant lastPostDate,
             @RequestParam(defaultValue = "10") int quantity,
             @RequestParam(required = false) String search) {
-        List<Post> posts = postService.getOlderPosts(lastPostDate, quantity, search);
+
+        List<Post> posts = postService.getOlderPosts(Long.valueOf(userId), lastPostDate, quantity, search);
         return ResponseEntity.ok(posts);
     }
 

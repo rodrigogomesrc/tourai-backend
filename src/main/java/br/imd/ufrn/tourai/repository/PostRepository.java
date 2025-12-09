@@ -14,15 +14,17 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
     @Query("SELECT p FROM Post p " +
-            "WHERE (:search IS NULL OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.user.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "WHERE (p.user.id = :userId OR p.user.id IN (SELECT f.following.id FROM Follow f WHERE f.follower.id = :userId)) " +
+            "AND (:search IS NULL OR LOWER(p.content) LIKE :search OR LOWER(p.user.name) LIKE :search) " +
             "ORDER BY p.postDate DESC")
-    List<Post> findLast(@Param("search") String search, Pageable pageable);
+    List<Post> findLast(@Param("userId") Long userId, @Param("search") String search, Pageable pageable);
 
     @Query("SELECT p FROM Post p " +
-            "WHERE p.postDate < :dateLastPost " +
-            "AND (:search IS NULL OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.user.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "WHERE (p.user.id = :userId OR p.user.id IN (SELECT f.following.id FROM Follow f WHERE f.follower.id = :userId)) " +
+            "AND p.postDate < :dateLastPost " +
+            "AND (:search IS NULL OR LOWER(p.content) LIKE :search OR LOWER(p.user.name) LIKE :search) " +
             "ORDER BY p.postDate DESC")
-    List<Post> findOlder(@Param("dateLastPost") Instant dateLastPost, @Param("search") String search, Pageable pageable);
+    List<Post> findOlder(@Param("userId") Long userId, @Param("dateLastPost") Instant dateLastPost, @Param("search") String search, Pageable pageable);
 
     Long countByUserId(Long userId);
 }
