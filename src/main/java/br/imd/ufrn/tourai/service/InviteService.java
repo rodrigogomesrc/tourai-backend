@@ -73,11 +73,11 @@ public class InviteService {
         Invite invite = new Invite();
         invite.setItinerary(itinerary);
         invite.setUser(user);
-        inviteRepository.save(invite);
+        Invite added = inviteRepository.save(invite);
 
         notificationService.create(
                 user, inviter, NotificationType.ROADMAP_INVITATION,
-                itinerary.getRoadmap().getDescription(), itinerary.getId());
+                itinerary.getRoadmap().getDescription(), added.getId());
 
         return invite;
     }

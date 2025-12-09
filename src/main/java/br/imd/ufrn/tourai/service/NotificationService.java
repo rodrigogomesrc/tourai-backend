@@ -35,15 +35,15 @@ public class NotificationService {
         newNotification.setCreatedAt(Instant.now());
         newNotification.setPayload(payload);
         newNotification.setEntityId(entityId);
-        newNotification.setReceived(false); // Garantindo padrão false
+        newNotification.setReceived(false);
         return this.notificationRepository.save(newNotification);
     }
 
-    public List<Notification> getRecentNotifications(Integer userId, int quantity, NotificationType type) {
+    public List<Notification> getRecentNotifications(Integer userId, int page, int size, NotificationType type) {
         userService.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        return notificationRepository.findRecent(userId, type, PageRequest.of(0, quantity));
+        return notificationRepository.findRecent(userId, type, PageRequest.of(page, size));
     }
 
     public List<Notification> getUnreadNotifications(Integer userId, NotificationType type) {
@@ -59,6 +59,13 @@ public class NotificationService {
                 .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
 
         notificationRepository.markAsReceived(notificationId);
+    }
+
+    public void markActionAsCompleted(Integer notificationId) {
+        notificationRepository.findById(Long.valueOf(notificationId))
+                .orElseThrow(() -> new ResourceNotFoundException("Notification not found"));
+
+        notificationRepository.markActionAsCompleted(notificationId);
     }
 
 }

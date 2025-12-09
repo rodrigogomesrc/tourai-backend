@@ -21,10 +21,11 @@ public class NotificationController {
     @GetMapping("/recent")
     public ResponseEntity<List<Notification>> listRecent(
             @RequestParam Integer userId,
-            @RequestParam(defaultValue = "10") int quantity,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
             @RequestParam(required = false) NotificationType type) {
 
-        List<Notification> notifications = notificationService.getRecentNotifications(userId, quantity, type);
+        List<Notification> notifications = notificationService.getRecentNotifications(userId, page, size, type);
         return ResponseEntity.ok(notifications);
     }
 
@@ -40,6 +41,12 @@ public class NotificationController {
     @PatchMapping("/{id}/read")
     public ResponseEntity<Void> markAsRead(@PathVariable Integer id) {
         notificationService.markAsReceived(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}/completed")
+    public ResponseEntity<Void> markActionCompleted(@PathVariable Integer id) {
+        notificationService.markActionAsCompleted(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -33,6 +33,11 @@ public class Notification {
 
     @Getter
     @Setter
+    @Column(
+            name = "received",
+            nullable = false,
+            columnDefinition = "boolean default false"
+    )
     private boolean received = false;
 
     @Getter
@@ -46,5 +51,14 @@ public class Notification {
     @Getter
     @Setter
     private Long entityId;
+
+    @Getter
+    @Setter
+    @Column(
+            name = "action_completed",
+            nullable = false,
+            columnDefinition = "boolean default false"
+    )
+    private boolean actionCompleted = false;
 
 }
