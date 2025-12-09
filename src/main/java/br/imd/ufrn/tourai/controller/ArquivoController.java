@@ -13,6 +13,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/arquivos")
 public class ArquivoController {
 
+    private static final long MAX_UPLOAD_SIZE = 20 * 1024 * 1024;
+
     private final ArquivoService arquivoService;
 
     public ArquivoController(ArquivoService arquivoService) {
@@ -20,17 +22,25 @@ public class ArquivoController {
     }
 
     @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("arquivo") MultipartFile file) {
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body("Arquivo não pode ser vazio");
-        }
+    public ResponseEntity<?> uploadArquivo(@RequestParam("arquivo") MultipartFile arquivo) {
 
         try {
-            String urlArquivo = arquivoService.salvarArquivo(file);
-            return ResponseEntity.ok(urlArquivo);
+            if (arquivo == null || arquivo.isEmpty()) {
+                return ResponseEntity.badRequest().body("Nenhum arquivo enviado.");
+            }
+
+
+            if (arquivo.getSize() > MAX_UPLOAD_SIZE) {
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                        .body("Arquivo maior que o limite permitido de 20MB.");
+            }
+
+            String url = arquivoService.salvarArquivo(arquivo);
+            return ResponseEntity.ok(url);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Erro ao fazer upload do arquivo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Erro ao processar upload: " + e.getMessage());
         }
     }
 
