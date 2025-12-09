@@ -102,4 +102,11 @@ public class UserService {
     public User findByIdOrThrow(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: " + id));
     }
+
+    public List<User> searchByName(String name) {
+        if (name == null || name.isBlank()) {
+            return List.of();
+        }
+        return userRepository.findByNameContainingIgnoreCase(name);
+    }
 }
