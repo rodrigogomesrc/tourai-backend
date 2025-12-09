@@ -8,14 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 import br.imd.ufrn.tourai.dto.AuthResponse;
 import br.imd.ufrn.tourai.dto.LoginRequest;
@@ -126,5 +118,16 @@ public class UserController {
         );
 
         return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UserResponse>> search(@RequestParam("query") String query) {
+        List<User> users = userService.searchByName(query);
+
+        List<UserResponse> response = users.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(response);
     }
 }
