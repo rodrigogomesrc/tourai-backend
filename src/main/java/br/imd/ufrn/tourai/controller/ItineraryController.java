@@ -1,7 +1,7 @@
 package br.imd.ufrn.tourai.controller;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.imd.ufrn.tourai.dto.CreateItineraryRequest;
+import br.imd.ufrn.tourai.dto.ItineraryType;
 import br.imd.ufrn.tourai.dto.UpdateItineraryRequest;
 import br.imd.ufrn.tourai.model.Itinerary;
 import br.imd.ufrn.tourai.service.ItineraryService;
@@ -41,8 +42,13 @@ public class ItineraryController {
     }
 
     @GetMapping
-    public List<Itinerary> search(@RequestParam(required = true) Long userId) {
-        return itineraryService.findByUserId(userId);
+    public Page<Itinerary> search(
+        @RequestParam(required = true) Long userId,
+        @RequestParam(required = false) ItineraryType type,
+        @RequestParam(required = false) String search,
+        Pageable pageable
+    ) {
+        return itineraryService.findByUserId(userId, type, search, pageable);
     }
 
     @GetMapping("/{id}")

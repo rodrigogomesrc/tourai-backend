@@ -47,23 +47,24 @@ public class PostController {
     }
 
     @GetMapping("/new")
-    public ResponseEntity<List<Post>> listNewer(@RequestParam(defaultValue = "10") int quantity) {
-        List<Post> posts = postService.getRecentPosts(quantity);
+    public ResponseEntity<List<Post>> listNewer(
+            @RequestParam(defaultValue = "10") int quantity,
+            @RequestParam(required = false) String search) {
+        List<Post> posts = postService.getRecentPosts(quantity, search);
         return ResponseEntity.ok(posts);
     }
 
     @GetMapping("/older")
     public ResponseEntity<List<Post>> listOlder(
             @RequestParam Instant lastPostDate,
-            @RequestParam(defaultValue = "10") int quantity) {
-        List<Post> posts = postService.getOlderPosts(lastPostDate, quantity);
+            @RequestParam(defaultValue = "10") int quantity,
+            @RequestParam(required = false) String search) {
+        List<Post> posts = postService.getOlderPosts(lastPostDate, quantity, search);
         return ResponseEntity.ok(posts);
     }
 
-
     @PostMapping("/{postId}/likes")
     public ResponseEntity<Void> addLike(@PathVariable Integer postId, @RequestParam Integer userId) {
-
         try {
             postService.addLike(postId, Long.valueOf(userId));
             return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -77,10 +78,7 @@ public class PostController {
     }
 
     @DeleteMapping("/{postId}/likes")
-    public ResponseEntity<Void> removeLike(
-            @PathVariable Integer postId,
-            @RequestParam Integer userId) {
-
+    public ResponseEntity<Void> removeLike(@PathVariable Integer postId, @RequestParam Integer userId) {
         try {
             postService.removeLike(postId, Long.valueOf(userId));
             return ResponseEntity.noContent().build();
@@ -92,11 +90,8 @@ public class PostController {
     }
 
     @GetMapping("/{postId}/liked")
-    public ResponseEntity<Boolean> hasUserLiked(
-            @PathVariable Integer postId,
-            @RequestParam Integer userId) {
+    public ResponseEntity<Boolean> hasUserLiked(@PathVariable Integer postId, @RequestParam Integer userId) {
         boolean liked = postService.hasUserLiked(postId, Long.valueOf(userId));
         return ResponseEntity.ok(liked);
     }
-
 }

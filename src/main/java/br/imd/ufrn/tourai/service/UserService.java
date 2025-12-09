@@ -99,16 +99,14 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public boolean authenticate(String email, String password) {
-        if (email == null || email.isBlank()) throw new BadRequestException("Email é obrigatório para autenticação");
-        if (password == null) throw new BadRequestException("Senha é obrigatória para autenticação");
-
-        Optional<User> user = userRepository.findByEmail(email);
-        if (user.isEmpty()) return false;
-        return passwordEncoder.matches(password, user.get().getPassword());
-    }
-
     public User findByIdOrThrow(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuário não encontrado com id: " + id));
+    }
+
+    public List<User> searchByName(String name) {
+        if (name == null || name.isBlank()) {
+            return List.of();
+        }
+        return userRepository.findByNameContainingIgnoreCase(name);
     }
 }

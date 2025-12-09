@@ -2,10 +2,10 @@ package br.imd.ufrn.tourai.service;
 
 import br.imd.ufrn.tourai.exception.ConflictException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
+import br.imd.ufrn.tourai.model.NotificationType;
 import br.imd.ufrn.tourai.model.PostLike;
 import br.imd.ufrn.tourai.model.Post;
 import br.imd.ufrn.tourai.model.User;
-import br.imd.ufrn.tourai.repository.CommentRepository;
 import br.imd.ufrn.tourai.repository.LikeRepository;
 import br.imd.ufrn.tourai.repository.PostRepository;
 import jakarta.transaction.Transactional;
@@ -20,22 +20,21 @@ import java.util.Optional;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final LikeRepository likeRepository;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public PostService(PostRepository postRepository,
-                       CommentRepository commentRepository,
                        LikeRepository likeRepository,
-                       UserService userService) {
+                       UserService userService,
+                       NotificationService notificationService) {
         this.postRepository = postRepository;
-        this.commentRepository = commentRepository;
         this.likeRepository = likeRepository;
         this.userService = userService;
+        this.notificationService = notificationService;
     }
 
     public Post save(Post post, Integer userId) {
-
         User user = userService.findById(Long.valueOf(userId))
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         post.setUser(user);
@@ -52,18 +51,16 @@ public class PostService {
         postRepository.deleteById(id);
     }
 
-    public List<Post> getRecentPosts(int quantity) {
-        return postRepository.findLast(PageRequest.of(0, quantity));
+    public List<Post> getRecentPosts(int quantity, String search) {
+        return postRepository.findLast(search, PageRequest.of(0, quantity));
     }
 
-    public List<Post> getOlderPosts(Instant lastPostDate, int quantity) {
-        return postRepository.findOlder(lastPostDate, PageRequest.of(0, quantity));
+    public List<Post> getOlderPosts(Instant lastPostDate, int quantity, String search) {
+        return postRepository.findOlder(lastPostDate, search, PageRequest.of(0, quantity));
     }
-
 
     @Transactional
     public void addLike(Integer postId, Long likerId) {
-
         Optional<User> liker = userService.findById(likerId);
         if (liker.isEmpty()) {
             throw new ResourceNotFoundException("User not found");
@@ -78,6 +75,12 @@ public class PostService {
 
         if (alreadyLiked) {
             throw new ConflictException("User already liked this post");
+        }
+
+        User postUser = post.getUser();
+        if (!postUser.getId().equals(likerId)) {
+            notificationService.create(
+                    postUser, liker.get(), NotificationType.LIKE, "", Long.valueOf(post.getId()));
         }
 
         PostLike postLike = new PostLike();
