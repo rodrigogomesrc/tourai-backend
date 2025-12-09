@@ -13,11 +13,16 @@ import java.util.List;
 @Repository
 public interface PostRepository extends JpaRepository<Post, Integer> {
 
-    @Query("SELECT p FROM Post p ORDER BY p.postDate DESC")
-    List<Post> findLast(Pageable pageable);
+    @Query("SELECT p FROM Post p " +
+            "WHERE (:search IS NULL OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.user.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "ORDER BY p.postDate DESC")
+    List<Post> findLast(@Param("search") String search, Pageable pageable);
 
-    @Query("SELECT p FROM Post p WHERE p.postDate < :dateLastPost ORDER BY p.postDate DESC")
-    List<Post> findOlder(@Param("dateLastPost") Instant dateLastPost, Pageable pageable);
+    @Query("SELECT p FROM Post p " +
+            "WHERE p.postDate < :dateLastPost " +
+            "AND (:search IS NULL OR LOWER(p.content) LIKE LOWER(CONCAT('%', :search, '%')) OR LOWER(p.user.name) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+            "ORDER BY p.postDate DESC")
+    List<Post> findOlder(@Param("dateLastPost") Instant dateLastPost, @Param("search") String search, Pageable pageable);
 
     Long countByUserId(Long userId);
 }
