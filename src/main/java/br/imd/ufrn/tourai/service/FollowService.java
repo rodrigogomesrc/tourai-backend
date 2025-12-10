@@ -4,6 +4,7 @@ import br.imd.ufrn.tourai.exception.BadRequestException;
 import br.imd.ufrn.tourai.exception.ConflictException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
 import br.imd.ufrn.tourai.model.Follow;
+import br.imd.ufrn.tourai.model.NotificationType;
 import br.imd.ufrn.tourai.model.User;
 import br.imd.ufrn.tourai.repository.FollowRepository;
 import br.imd.ufrn.tourai.repository.UserRepository;
@@ -18,10 +19,16 @@ public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
-    public FollowService(FollowRepository followRepository, UserRepository userRepository) {
+    public FollowService(
+            FollowRepository followRepository,
+            UserRepository userRepository,
+            NotificationService notificationService) {
+
         this.followRepository = followRepository;
         this.userRepository = userRepository;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -36,8 +43,17 @@ public class FollowService {
 
         User follower = userRepository.findById(followerId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário seguidor não encontrado."));
+
         User following = userRepository.findById(followingId)
                 .orElseThrow(() -> new ResourceNotFoundException("Usuário a ser seguido não encontrado."));
+
+        notificationService.create(
+                following,
+                follower,
+                NotificationType.FOLLOW,
+                follower.getName() + " começou a seguir você.",
+                follower.getId()
+        );
 
         Follow follow = new Follow(follower, following);
         followRepository.save(follow);
