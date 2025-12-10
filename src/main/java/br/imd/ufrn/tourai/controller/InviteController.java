@@ -5,15 +5,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.imd.ufrn.tourai.config.CustomUserDetails;
 import br.imd.ufrn.tourai.dto.CreateInviteRequest;
 import br.imd.ufrn.tourai.model.Invite;
 import br.imd.ufrn.tourai.service.InviteService;
 
 import java.util.List;
 
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 
 
 @RestController
@@ -27,22 +29,34 @@ public class InviteController {
 
     @PostMapping
     public Invite create(@RequestBody CreateInviteRequest request) {
-        return inviteService.create(request);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
+        return inviteService.create(userDetails, request);
     }
 
     @GetMapping
-    public List<Invite> list(@RequestParam(required = true) Long userId) {
-        return inviteService.list(userId);
+    public List<Invite> list() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
+        return inviteService.list(userDetails);
     }
 
     @PostMapping("/{id}/accept")
     public void accept(@PathVariable Long id) {
-        inviteService.accept(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
+        inviteService.accept(userDetails, id);
     }
 
     @PostMapping("/{id}/decline")
     public void decline(@PathVariable Long id) {
-        inviteService.decline(id);
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        CustomUserDetails userDetails = (CustomUserDetails) auth.getPrincipal();
+
+        inviteService.decline(userDetails, id);
     }
 
 }

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
-public record CreateItineraryRequest(Long userId, Long roadmapId, List<CreateItineraryRequestActivity> activities) {
+public record CreateItineraryRequest(Long roadmapId, List<CreateItineraryRequestActivity> activities) {
     public static record CreateItineraryRequestActivity(Long activityId, @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX") OffsetDateTime time) {
 
     }

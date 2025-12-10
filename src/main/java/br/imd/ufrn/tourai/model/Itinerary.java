@@ -3,6 +3,8 @@ package br.imd.ufrn.tourai.model;
 import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -46,4 +48,8 @@ public class Itinerary {
         inverseJoinColumns = @JoinColumn(name = "user_id")
     )
     private Set<User> participants;
+
+    @OneToMany(mappedBy = "itinerary", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<Invite> invites;
 }

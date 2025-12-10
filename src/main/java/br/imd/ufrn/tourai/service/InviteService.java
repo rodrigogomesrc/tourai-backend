@@ -6,10 +6,12 @@ import java.util.Optional;
 import br.imd.ufrn.tourai.model.NotificationType;
 import org.springframework.stereotype.Service;
 
+import br.imd.ufrn.tourai.config.CustomUserDetails;
 import br.imd.ufrn.tourai.dto.CreateInviteRequest;
 import br.imd.ufrn.tourai.exception.BadRequestException;
 import br.imd.ufrn.tourai.exception.ConflictException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
+import br.imd.ufrn.tourai.exception.UnauthorizedException;
 import br.imd.ufrn.tourai.model.Invite;
 import br.imd.ufrn.tourai.model.Itinerary;
 import br.imd.ufrn.tourai.model.User;
@@ -38,15 +40,16 @@ public class InviteService {
     }
 
     @Transactional
-    public Invite create(CreateInviteRequest request) {
-
-        // TODO: adicionar verificação se o usuário que está enviando o convite é o dono do itinerário
-
+    public Invite create(CustomUserDetails userDetails, CreateInviteRequest request) {
         Itinerary itinerary = itineraryRepository
             .findById(request.itineraryId())
             .orElseThrow(() ->
                 new ResourceNotFoundException("Itinerary with ID " + request.itineraryId() + " not found")
             );
+
+        if (userDetails.getId() != itinerary.getUser().getId()) {
+            throw new UnauthorizedException("Cannot invite for an itinerary that does not belong to you");
+        }
 
         User inviter = itinerary.getUser();
 
@@ -82,17 +85,21 @@ public class InviteService {
         return invite;
     }
 
-    public List<Invite> list(Long userId) {
-        return inviteRepository.findByUserId(userId);
+    public List<Invite> list(CustomUserDetails userDetails) {
+        return inviteRepository.findByUserId(userDetails.getId());
     }
 
     @Transactional
-    public void accept(Long inviteId) {
+    public void accept(CustomUserDetails userDetails, Long inviteId) {
         Invite invite = inviteRepository
             .findById(inviteId)
             .orElseThrow(() ->
                 new ResourceNotFoundException("Invite with ID " + inviteId + " not found")
             );
+
+        if (invite.getUser().getId() != userDetails.getId()) {
+            throw new UnauthorizedException("Cannot accept invite that is not for you");
+        }
 
         Itinerary itinerary = invite.getItinerary();
         User user = invite.getUser();
@@ -104,12 +111,16 @@ public class InviteService {
     }
 
     @Transactional
-    public void decline(Long inviteId) {
+    public void decline(CustomUserDetails userDetails, Long inviteId) {
         Invite invite = inviteRepository
             .findById(inviteId)
             .orElseThrow(() ->
                 new ResourceNotFoundException("Invite with ID " + inviteId + " not found")
             );
+
+        if (invite.getUser().getId() != userDetails.getId()) {
+            throw new UnauthorizedException("Cannot decline invite that is not for you");
+        }
 
         inviteRepository.delete(invite);
     }

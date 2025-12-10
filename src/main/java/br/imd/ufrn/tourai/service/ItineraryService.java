@@ -10,11 +10,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import br.imd.ufrn.tourai.config.CustomUserDetails;
 import br.imd.ufrn.tourai.dto.CreateItineraryRequest;
 import br.imd.ufrn.tourai.dto.ItineraryType;
 import br.imd.ufrn.tourai.dto.UpdateItineraryRequest;
 import br.imd.ufrn.tourai.exception.BadRequestException;
 import br.imd.ufrn.tourai.exception.ResourceNotFoundException;
+import br.imd.ufrn.tourai.exception.UnauthorizedException;
 import br.imd.ufrn.tourai.model.Activity;
 import br.imd.ufrn.tourai.model.Itinerary;
 import br.imd.ufrn.tourai.model.ItineraryActivity;
@@ -46,10 +48,10 @@ public class ItineraryService {
         this.activityRepository = activityRepository;
     }
 
-    private Itinerary fromDTOToEntity(CreateItineraryRequest request) {
+    private Itinerary fromDTOToEntity(CustomUserDetails userDetails, CreateItineraryRequest request) {
         User user = userRepository
-            .findById(request.userId())
-            .orElseThrow(() -> new ResourceNotFoundException("User with id " + request.userId() + " not found"));
+            .findById(userDetails.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("User with id " + userDetails.getId() + " not found"));
 
         Roadmap roadmap = roadmapRepository
             .findById(request.roadmapId())
@@ -82,8 +84,8 @@ public class ItineraryService {
     }
 
     @Transactional
-    public Itinerary create(CreateItineraryRequest request) {
-        Itinerary itinerary = fromDTOToEntity(request);
+    public Itinerary create(CustomUserDetails userDetails, CreateItineraryRequest request) {
+        Itinerary itinerary = fromDTOToEntity(userDetails, request);
 
         Set<String> seenTimes = new HashSet<>();
 
@@ -120,10 +122,19 @@ public class ItineraryService {
     }
 
     @Transactional
-    public Itinerary update(Long id, UpdateItineraryRequest request) {
+    public Itinerary update(CustomUserDetails userDetails, Long id, UpdateItineraryRequest request) {
         Itinerary itinerary = itineraryRepository
             .findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Itinerary with id " + id + " not found"));
+
+        if (
+            userDetails.getId() != itinerary.getUser().getId() &&
+            !itinerary.getParticipants()
+                .stream()
+                .anyMatch((user) -> user.getId() == userDetails.getId())
+        ) {
+            throw new UnauthorizedException("Cannot update an itinerary you are not part of");
+        }
 
         Set<String> seenTimes = new HashSet<>();
 
@@ -161,22 +172,41 @@ public class ItineraryService {
         return itineraryRepository.save(itinerary);
     }
 
-    public Page<Itinerary> findByUserId(Long userId, ItineraryType type, String search, Pageable pageable) {
+    public Page<Itinerary> find(CustomUserDetails userDetails, ItineraryType type, String search, Pageable pageable) {
         return itineraryRepository.findByUserId(
-            userId,
+            userDetails.getId(),
             (type == null ? null : type.toString()),
             (search == null ? null : search.toLowerCase()),
             pageable
         );
     }
 
-    public Itinerary findByIdOrThrow(Long id) {
-        return itineraryRepository
+    public Itinerary findByIdOrThrow(CustomUserDetails userDetails, Long id) {
+        Itinerary itinerary = itineraryRepository
             .findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Itinerary with id " + id + " not found"));
+
+        if (
+            userDetails.getId() != itinerary.getUser().getId() &&
+            !itinerary.getParticipants()
+                .stream()
+                .anyMatch((user) -> user.getId() == userDetails.getId())
+        ) {
+            throw new UnauthorizedException("Cannot get this itinerary");
+        }
+
+        return itinerary;
     }
 
-    public void deleteById(Long id) {
+    public void deleteById(CustomUserDetails userDetails, Long id) {
+        Itinerary itinerary = itineraryRepository
+            .findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Itinerary with id " + id + " not found"));
+
+        if (userDetails.getId() != itinerary.getUser().getId()) {
+            throw new UnauthorizedException("Cannot delete an itinerary that does not belong to you");
+        }
+
         itineraryRepository.deleteById(id);
     }
 

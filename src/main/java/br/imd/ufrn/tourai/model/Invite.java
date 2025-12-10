@@ -1,5 +1,7 @@
 package br.imd.ufrn.tourai.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,6 +21,7 @@ public class Invite {
 
     @ManyToOne
     @JoinColumn(name = "itinerary_id", nullable = false)
+    @JsonBackReference
     private Itinerary itinerary;
 
     @ManyToOne
