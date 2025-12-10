@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -107,6 +108,8 @@ public class UserService {
         if (name == null || name.isBlank()) {
             return List.of();
         }
-        return userRepository.findByNameContainingIgnoreCase(name);
+
+        // retorna no máximo 5
+        return userRepository.findByNameContainingIgnoreCase(name, PageRequest.of(0, 5));
     }
 }
