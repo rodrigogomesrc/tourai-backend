@@ -105,11 +105,14 @@ public class RoadmapService {
         if (roadmap == null) {
             throw new EntityNotFoundException("Roadmap not found: " + id);
         }
-        boolean isPublicApproved = roadmap.getVisibility() == RoadmapVisibility.PUBLIC && roadmap.getStatus() == ModerationStatus.APPROVED;
+
+        boolean isPublic = roadmap.getVisibility() == RoadmapVisibility.PUBLIC;
         boolean isOwner = loggedUser != null && roadmap.getOwner() != null && Objects.equals(roadmap.getOwner().getId(), loggedUser.getId());
-        if (!isPublicApproved && !isOwner) {
+
+        if (!isPublic && !isOwner) {
             throw new SecurityException("Access denied to roadmap " + id);
         }
+
         return roadmap;
     }
 
